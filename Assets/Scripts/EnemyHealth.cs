@@ -23,6 +23,11 @@ public class EnemyHealth : MonoBehaviour
         
         enemyHealth = enemyHealth - Damage;
 
+        if(enemyHealth <= 0)
+        {
+            Destroy(this.gameObject);
+        }
+
 
 
     }

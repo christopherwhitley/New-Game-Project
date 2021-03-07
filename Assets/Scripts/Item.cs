@@ -11,6 +11,7 @@ public class Item : ScriptableObject
 {
 
     public int price;
-
+    public int armour;
+    public int damage;
 
 }

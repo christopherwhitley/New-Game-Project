@@ -9,12 +9,28 @@ public class DialogueManager : MonoBehaviour
     public TMP_Text nameText;
     public TMP_Text dialogueText;
     bool skip = false;
+    
+    Player player;
+    
 
-    GameObject myCanvas;
+    [SerializeField] GameObject myCanvas;
+    [SerializeField] GameObject myCanvasBackground;
 
     private Queue<string> sentences; // a queue is like a list but more restrictive, it's also referred to as a FIFO (First in, first out)
 
-   
+    Villager villager;
+
+    private void Start()
+    {
+        sentences = new Queue<string>();
+
+        player = FindObjectOfType<Player>();
+        myCanvas.SetActive(false);
+        myCanvasBackground.SetActive(false);
+        myCanvas.SetActive(false);
+        villager = FindObjectOfType<Villager>();
+
+    }
 
     private void Update()
     {
@@ -36,23 +52,21 @@ public class DialogueManager : MonoBehaviour
             skip = true;
         }
 
-
-
     }
 
-    private void Start()
-    {
-        sentences = new Queue<string>();
-        myCanvas = GameObject.Find("Canvas");
-        myCanvas.SetActive(false);
-
-    }
+    
 
     public void StartDialogue(State dialogue)
     {
         Debug.Log("Starting conversation " + dialogue.name);
-
         myCanvas.SetActive(true);
+        myCanvasBackground.SetActive(true);
+        player.InstantiateClone();
+        //villager.InstantiateNPC();
+
+
+
+        
 
         nameText.text = dialogue.name;
 
@@ -78,6 +92,8 @@ public class DialogueManager : MonoBehaviour
         {
             
             Debug.Log("Stop talking");
+
+            
 
             //StartCoroutine(EndingDialogue());
             
@@ -123,7 +139,7 @@ public class DialogueManager : MonoBehaviour
         
         foreach(char letter in sentence.ToCharArray()) // converts our sentence array into characters
         {
-            Debug.Log("Typing");
+            
             dialogueText.text += letter;
 
             if (skip == true)
@@ -155,9 +171,9 @@ public class DialogueManager : MonoBehaviour
             StopAllCoroutines();
             sentences.Clear();
             dialogueText.text = "";
-
+            
             myCanvas.SetActive(false);
-        
+            Villager.isTalking = false;
 
         
 

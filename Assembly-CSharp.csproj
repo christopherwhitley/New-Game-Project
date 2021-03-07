@@ -112,6 +112,7 @@
     <Compile Include="Assets\Scripts\Player.cs" />
     <Compile Include="Assets\Scripts\PlayerHealth.cs" />
     <Compile Include="Assets\Scripts\SceneLoader.cs" />
+    <Compile Include="Assets\Scripts\ShopManager.cs" />
     <Compile Include="Assets\Scripts\Slime.cs" />
     <Compile Include="Assets\Scripts\SlimeHead.cs" />
     <Compile Include="Assets\Scripts\State.cs" />

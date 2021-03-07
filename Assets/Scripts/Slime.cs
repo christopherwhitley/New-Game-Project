@@ -65,7 +65,7 @@ public class Slime : MonoBehaviour
                 transform.Translate(1 * Time.deltaTime * speed, 0, 0);
 
                 scale.x = scaleX;
-                Debug.Log(scale.x);
+                
             }
             if (moveRight == false)
             {
@@ -73,7 +73,7 @@ public class Slime : MonoBehaviour
                 transform.Translate(-1 * Time.deltaTime * speed, 0, 0);
 
                 scale.x = -scaleX;
-                Debug.Log(scale.x);
+                
             }
         }
         transform.localScale = scale;

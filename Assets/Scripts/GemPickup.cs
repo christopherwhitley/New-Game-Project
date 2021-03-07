@@ -16,6 +16,7 @@ public class GemPickup : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
+            Debug.Log("Gem pickup");
             GameObject go = Instantiate(particles.gameObject, transform.position, transform.rotation);
             gems.AddGem();
             Destroy(go, 2f);

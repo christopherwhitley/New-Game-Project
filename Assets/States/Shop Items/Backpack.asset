@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: Backpack
   m_EditorClassIdentifier: 
   price: 3
+  armour: 0

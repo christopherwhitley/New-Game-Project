@@ -12,6 +12,7 @@ TagManager:
   - Last Level
   - UI
   - Start
+  - Ladder Exit
   layers:
   - Default
   - TransparentFX

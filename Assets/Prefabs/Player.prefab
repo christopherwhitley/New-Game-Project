@@ -502,7 +502,6 @@ GameObject:
   - component: {fileID: 7109558281585238684}
   - component: {fileID: 1837351315}
   - component: {fileID: 5514032806690586309}
-  - component: {fileID: 1996093083}
   - component: {fileID: 27265236}
   m_Layer: 10
   m_Name: Player
@@ -608,6 +607,9 @@ MonoBehaviour:
   jumpSFX: {fileID: 8300000, guid: 24fdbe336c276a5439d286bdbdf2990d, type: 3}
   damage: 20
   thrust: 500
+  playerPlacement: {fileID: 0}
+  armourSprite: {fileID: 212924519056024418}
+  weaponSprite: {fileID: 212043285997010526}
 --- !u!114 &5514032806690586309
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -621,22 +623,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerHealth: 100
---- !u!58 &1996093083
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1109987028385428}
-  m_Enabled: 0
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: -0.030651629, y: 0.03065908}
-  serializedVersion: 2
-  m_Radius: 0.16979557
 --- !u!82 &27265236
 AudioSource:
   m_ObjectHideFlags: 0
@@ -649,7 +635,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.807
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -3957,7 +3943,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4744287895581962}
-  - component: {fileID: 210551131624867136}
+  - component: {fileID: 394536031281842667}
   m_Layer: 10
   m_Name: Body
   m_TagString: Untagged
@@ -3983,7 +3969,7 @@ Transform:
   m_Father: {fileID: 4137128368968656}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &210551131624867136
+--- !u!210 &394536031281842667
 SortingGroup:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3993,7 +3979,7 @@ SortingGroup:
   m_Enabled: 1
   m_SortingLayerID: 188637849
   m_SortingLayer: 4
-  m_SortingOrder: 200
+  m_SortingOrder: 100
 --- !u!1 &1549547319910844
 GameObject:
   m_ObjectHideFlags: 0
@@ -6459,6 +6445,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4836314015479216}
+  - component: {fileID: 2068940034878296071}
   m_Layer: 10
   m_Name: Upper
   m_TagString: Untagged
@@ -6486,6 +6473,17 @@ Transform:
   m_Father: {fileID: 4744287895581962}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -1.0622222}
+--- !u!210 &2068940034878296071
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1933805290767638}
+  m_Enabled: 1
+  m_SortingLayerID: 188637849
+  m_SortingLayer: 4
+  m_SortingOrder: 100
 --- !u!1 &1947828315830294
 GameObject:
   m_ObjectHideFlags: 0

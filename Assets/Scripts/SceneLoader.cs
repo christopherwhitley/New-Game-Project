@@ -2,9 +2,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Cinemachine;
 
 public class SceneLoader : MonoBehaviour
 {
+
+    private void Awake()
+    {
+
+        int sceneLoaderCount = FindObjectsOfType<SceneLoader>().Length;
+        if (sceneLoaderCount > 1)
+        {
+            gameObject.SetActive(false);
+            Destroy(gameObject);
+        }
+        else
+        {
+            DontDestroyOnLoad(gameObject);
+
+        }
+    }
     Player player;
 
     private void Start() //called third
@@ -36,6 +53,10 @@ public class SceneLoader : MonoBehaviour
     void OnSceneLoaded(Scene scene, LoadSceneMode mode) //called second
     {
         player = FindObjectOfType<Player>();
-        //player.SetStartPoint();
+        player.SetStartPoint();
+        var vcam = FindObjectOfType<CinemachineVirtualCamera>();
+        vcam.LookAt = player.gameObject.transform;
+        vcam.Follow = player.gameObject.transform;
+
     }
 }
