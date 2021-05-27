@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: AymarDialogue
   m_EditorClassIdentifier: 
   name: Aymar
+  questItem: {fileID: 3073630308845708816, guid: b22c755208ca68c43b70535952af7797,
+    type: 3}
   sentences:
   - Ah, another wanderer through these parts. Be sure to visit the stores here for
     gear and weapons.

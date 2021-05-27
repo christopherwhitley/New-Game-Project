@@ -58,7 +58,7 @@ public class DialogueManager : MonoBehaviour
 
     public void StartDialogue(State dialogue)
     {
-        Debug.Log("Starting conversation " + dialogue.name);
+       // Debug.Log("Starting conversation " + dialogue.name);
         myCanvas.SetActive(true);
         myCanvasBackground.SetActive(true);
         player.InstantiateClone();
@@ -173,7 +173,11 @@ public class DialogueManager : MonoBehaviour
             dialogueText.text = "";
             
             myCanvas.SetActive(false);
+            myCanvasBackground.SetActive(false);
             Villager.isTalking = false;
+            villager.DetermineDirection();
+            
+        
 
         
 

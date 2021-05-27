@@ -12,5 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84661cdbd1ca9bf46b4755abaad0f5f1, type: 3}
   m_Name: Backpack
   m_EditorClassIdentifier: 
+  id: 0
+  sprite: {fileID: 21300000, guid: e9b36b9e47f1f49468dc8b9c2a18927d, type: 3}
   price: 3
+  health: 0
   armour: 0
+  damage: 0

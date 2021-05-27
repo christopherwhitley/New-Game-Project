@@ -12,18 +12,25 @@ public class Enemy : MonoBehaviour
     public Player player;
     public Transform enemyTarget;
     GameObject playerTarget;
-    [SerializeField] int speed = 2;
+    [SerializeField] float speed = 2;
     [SerializeField] int attackRange = 4;
     [SerializeField] int defaultRange = 6;
     [SerializeField] float stopMovement = 1.4f;
     [SerializeField] float thrust = 1000;
+    [SerializeField] float attackRate;
     PlayerHealth playerHealth;
     EnemyHealth enemyHealth;
     Collider2D enemyCollider;
-    bool isAttackingPlayer;
+    public bool isAttackingPlayer;
     public int damage = 10;
     Vector3 myScale;
-
+    public bool isBeingAttacked;
+    [SerializeField] BoxCollider2D myWeaponCollider;
+    [SerializeField] public int knockbackForce;
+    public float knockBackCount;
+    public float knockBackLength;
+    public bool hitFromLeft;
+    public bool hitFromRight;
 
     // Start is called before the first frame update
     void Start()
@@ -34,19 +41,24 @@ public class Enemy : MonoBehaviour
         enemyTarget = player.GetComponent<Transform>();
         myAnimator = GetComponentInChildren<Animator>();
         playerHealth = FindObjectOfType<PlayerHealth>();
-        enemyHealth = FindObjectOfType<EnemyHealth>();
+        enemyHealth = GetComponent<EnemyHealth>();
         enemyCollider = GameObject.FindObjectOfType<Player>().GetComponent<CapsuleCollider2D>();
         myScale = transform.localScale;
+
+        myWeaponCollider.isTrigger = false;
+
     }
 
     // Update is called once per frame
     void Update()
     {
+
+        
         //If distance is greater than default range don't do anything
         float distance = Vector2.Distance(enemyTarget.position, transform.position);
         if (distance >= defaultRange)
         {
-            
+
             return;
         }
         //if distance is less than the stopMovement float + isAttackingPlayer is false change to true and start Attack coroutine.
@@ -56,52 +68,96 @@ public class Enemy : MonoBehaviour
             {
                 isAttackingPlayer = true;
                 myAnimator.ResetTrigger("Attack");
+                
                 StartCoroutine(Attack());
 
             }
 
         }
-            //Face direction of player
-            else if (distance <= attackRange)
+        //Face direction of player
+
+
+        else if (knockBackCount <= 0 && distance <= attackRange)
+        {
+
+            transform.position = Vector2.MoveTowards(transform.position, enemyTarget.position, speed * Time.deltaTime);
+            myAnimator.SetBool("Walking", true);
+            if (enemyTarget.position.x > transform.position.x && distance <= attackRange)
             {
-                transform.position = Vector2.MoveTowards(transform.position, enemyTarget.position, speed * Time.deltaTime);
-                if (enemyTarget.position.x > transform.position.x)
-                {
                 //face right
                 transform.localScale = new Vector3(myScale.x, myScale.y, myScale.z);
-                }
-                else if (enemyTarget.position.x < transform.position.x)
-                {
+            }
+            if (enemyTarget.position.x < transform.position.x && distance <= attackRange)
+            {
                 //face left
                 transform.localScale = new Vector3(-myScale.x, myScale.y, myScale.z);
-                }
+
             }
+            
+        }
+
+        else if (knockBackCount > 0)
+        {
+
+            myAnimator.SetBool("Walking", false);
+
+            knockBackCount -= Time.deltaTime;
+        }
+
 
         IEnumerator Attack()
         {
-            
+
             
             myAnimator.SetTrigger("Attack");
-            yield return new WaitForSeconds(2);
+            yield return new WaitForSeconds(attackRate);
             isAttackingPlayer = false;
-
+            
+            
 
         }
+
     }
     // Hit - Lose Health - Pushed back
-    private void OnCollisionEnter2D(Collision2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.tag.Equals("Weapon"))
+        Debug.Log("trigger");
+        if (other.gameObject.tag.Equals("Weapon") && other.transform.position.x > transform.position.x)
         {
+           
             int damage = FindObjectOfType<Player>().damage;
 
             enemyHealth.HealthLoss(damage);
 
-            myRigidbody.velocity = new Vector2(0, 0);
+            knockBackCount = knockBackLength;
 
-            Vector2 direction = (transform.position - other.transform.position).normalized;
+            hitFromRight = true;
+            
+            myRigidbody.velocity = new Vector2(-25, myRigidbody.velocity.y);
 
-            myRigidbody.AddForce(direction * thrust);
+
+            //Vector2 direction = (transform.position - other.transform.position).normalized;
+
+            //myRigidbody.AddForce(direction * thrust);
+
+
+        }
+        if (other.gameObject.tag.Equals("Weapon") && other.transform.position.x < transform.position.x)
+        {
+            Debug.Log(isBeingAttacked);
+
+            int damage = FindObjectOfType<Player>().damage;
+
+            enemyHealth.HealthLoss(damage);
+
+            knockBackCount = knockBackLength;
+
+            hitFromLeft = true;
+            myRigidbody.velocity = new Vector2(25, myRigidbody.velocity.y);
+
+            //Vector2 direction = (transform.position - other.transform.position).normalized;
+
+            //myRigidbody.AddForce(direction * thrust);
 
 
         }
@@ -110,6 +166,13 @@ public class Enemy : MonoBehaviour
             return;
         }
 
+    }
 
-    }
-    }
+}
+    
+
+
+
+
+
+    

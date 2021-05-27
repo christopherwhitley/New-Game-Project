@@ -2,13 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using System;
 
 public class ItemManager : MonoBehaviour
 {
-    [SerializeField] Item itemStats;
+    [SerializeField] public Item itemStats;
     SceneLoader sceneLoader;
     Sprite newArmour;
     Sprite newWeapon;
+    SpriteRenderer currentWeapon;
+    SpriteRenderer currentArmour;
+
+    private void Start()
+    {
+        currentArmour = FindObjectOfType<Player>().armourSprite;
+        currentWeapon = FindObjectOfType<Player>().armourSprite;
+    }
+
+
 
     public void PurchaseItem()
     {
@@ -25,13 +37,19 @@ public class ItemManager : MonoBehaviour
     {
         Debug.Log("purchase armour");
         Gems gems = FindObjectOfType<Gems>();
-        gems.RemoveGems(itemStats.price);
-        Destroy(gameObject);
-        sceneLoader = FindObjectOfType<SceneLoader>();
-        //sceneLoader.LoadNextScene();
-        newArmour = this.gameObject.GetComponentInChildren<Image>().sprite;
 
-        SwapArmour();
+        if (itemStats.price < gems.gemCount)
+        {
+
+            gems.RemoveGems(itemStats.price);
+            Destroy(gameObject);
+            sceneLoader = FindObjectOfType<SceneLoader>();
+            //sceneLoader.LoadNextScene();
+            newArmour = this.gameObject.GetComponentInChildren<Image>().sprite;
+
+            SwapArmour();
+        }
+        else return;
     }
 
     public void PurchaseWeapon()
@@ -49,16 +67,22 @@ public class ItemManager : MonoBehaviour
 
     private void SwapWeapon()
     {
-        SpriteRenderer weapon = FindObjectOfType<Player>().weaponSprite;
-        Debug.Log(weapon.sprite);
-        weapon.sprite = newWeapon;
+        
+        currentWeapon.sprite = newWeapon;
     }
 
     private void SwapArmour()
     {
-        SpriteRenderer armour = FindObjectOfType<Player>().armourSprite;
-        Debug.Log(armour.sprite);
-        armour.sprite = newArmour;
+        
+        
+        currentArmour.sprite = newArmour;
+    }
+    public void AddPotion()
+    {
+        Debug.Log("Button press");
+        PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
+        playerHealth.AddPotion();
+
     }
 }
 

@@ -10,13 +10,14 @@ public class State : ScriptableObject
 {
 
     [SerializeField] public string name;
+    [SerializeField] public GameObject questItem;
 
     [TextArea(10, 14)]
     [SerializeField] public string[] sentences;
-    
-    
 
  
-   
+
+
+
 
 }

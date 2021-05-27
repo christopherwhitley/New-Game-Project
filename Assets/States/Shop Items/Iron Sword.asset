@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84661cdbd1ca9bf46b4755abaad0f5f1, type: 3}
   m_Name: Iron Sword
   m_EditorClassIdentifier: 
+  id: 1
+  weaponSprite: {fileID: -5804522545122135016, guid: 624c5a5d3c393964499b759e4256c30c,
+    type: 3}
+  armourSprite: {fileID: 0}
   price: 5
+  health: 0
   armour: 0
   damage: 3

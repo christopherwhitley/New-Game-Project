@@ -22,7 +22,7 @@ public class ShopManager : MonoBehaviour
 
     private void EnterShop()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.K))
         {
             
             Debug.Log("load scene");

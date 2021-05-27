@@ -279,6 +279,12 @@
     <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
       <HintPath>C:/Program Files (x86)/Microsoft Visual Studio Tools for Unity/15.0/Editor/SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
     </Reference>
+    <Reference Include="HeroEditor.Common">
+      <HintPath>C:/Repos/Unity 2D/Game Project/Assets/HeroEditor/Common/HeroEditor.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="HeroEditor.Common.Editor">
+      <HintPath>C:/Repos/Unity 2D/Game Project/Assets/HeroEditor/Common/Editor/HeroEditor.Common.Editor.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEditor.Advertisements">
       <HintPath>C:/Repos/Unity 2D/Game Project/Library/PackageCache/com.unity.ads@3.4.5/Editor/UnityEditor.Advertisements.dll</HintPath>
     </Reference>

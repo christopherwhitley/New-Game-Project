@@ -10,6 +10,7 @@ public class GemPickup : MonoBehaviour
     private void Start()
     {
         gems = FindObjectOfType<Gems>();
+        Debug.Log("Gem pickup start");
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

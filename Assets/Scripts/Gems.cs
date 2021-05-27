@@ -5,7 +5,7 @@ using TMPro;
 
 public class Gems : MonoBehaviour
 {
-    [SerializeField] int gemCount = 0;
+    [SerializeField] public int gemCount = 0;
     public TMP_Text gemCountText;
     
    

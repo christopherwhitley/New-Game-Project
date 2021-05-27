@@ -34,6 +34,14 @@ public class Player : MonoBehaviour
     Vector2 gravityAtStart;
     bool isClimbing;
     bool exitLadder;
+
+    public bool isAttacking;
+    public bool isWalking;
+    public bool isJumping;
+
+    //Quest toggles
+    public List<string> quests = new List<string>();
+    
     
 
     public GameObject playerPlacement;
@@ -50,11 +58,21 @@ public class Player : MonoBehaviour
     GameObject startPoint;
 
     public SpriteRenderer armourSprite;
-    public SpriteRenderer weaponSprite;
+    [SerializeField] public SpriteRenderer weaponSprite;
+
+    public float knockbackCount;
+    public float knockbackLength;
+    public bool hitFromLeft;
+    public bool hitFromRight;
+    public bool playerHit;
+
+    [SerializeField] BoxCollider2D weaponCollider;
+
+    [SerializeField] public List<GameObject> questItems;
 
     private void Awake()
     {
-        
+        //quests.Add("AymarQuest");
         int playerCount = FindObjectsOfType<Player>().Length;
         if (playerCount > 1 && myCanvas.isActiveAndEnabled == false)
         {
@@ -91,6 +109,8 @@ public class Player : MonoBehaviour
         isClimbing = false;
         exitLadder = false;
         playerCollider = GetComponent<CapsuleCollider2D>();
+        
+        weaponCollider.isTrigger = false;
 
         characterScale = transform.localScale;
         characterScaleX = characterScale.x;
@@ -101,19 +121,38 @@ public class Player : MonoBehaviour
 
         armourSprite = GameObject.Find("Torso[Armour]").GetComponent<SpriteRenderer>();
         weaponSprite = GameObject.Find("MeleeWeapon").GetComponent<SpriteRenderer>();
+        isAttacking = false;
+        isWalking = false;
+        isJumping = false;
+        playerHit = false;
+
+        
+
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        Move();
-        Jump();
-        FlipSprite();
-        ClimbLadder();
-        Attack();
         
+        if (playerHealth.isDead == false)
+        {
+            Move();
+            Jump();
+            FlipSprite();
+            ClimbLadder();
+            Attack();
+        }
+        if (myRigidBody.velocity.y <= 0)
+        {
+            
+            footCollider.enabled = true;
+        }
+        if (knockbackCount > 0)
+        {
 
+            knockbackCount -= Time.deltaTime;
+        }
     }
     private void FixedUpdate()
     {
@@ -121,51 +160,53 @@ public class Player : MonoBehaviour
 
         int layerMask = LayerMask.GetMask("Foreground");
 
-        RaycastHit2D hit = Physics2D.Raycast(footCollider.transform.position, Vector2.right, laserLength, layerMask);
-        if (hit.collider != null && !footCollider.IsTouchingLayers(LayerMask.GetMask("Ladder")))
+        RaycastHit2D hitRight = Physics2D.Raycast(footCollider.transform.position, Vector2.right, laserLength, layerMask);
+        RaycastHit2D hitLeft = Physics2D.Raycast(footCollider.transform.position, Vector2.left, laserLength, layerMask);
+        if (hitRight.collider != null || hitLeft.collider != null && !footCollider.IsTouchingLayers(LayerMask.GetMask("Ladder")))
         {
-            //WARNING - If there are different sized slopes this won't work so it's better to calculate the force and apply it instead of saying 15f. Look up how to do this.
+            
             
             
             //Physics2D.gravity = new Vector2(15f, -25f);
-            if (controlThrow == 0)
+            if (controlThrow == 0 && isJumping == false)
             {
-                
+
                 
                 myRigidBody.gravityScale = 0.01f;
             }
         }
-        else if (hit.collider == null)
+        else if (hitRight.collider == null && hitLeft.collider == null)
         {
             myRigidBody.gravityScale = gravityScaleAtStart;
         }
+    
 
-        
     }
 
 
     private void Move()
     {
-       
+        if (knockbackCount <= 0)
+        {
 
-        float controlThrow = Input.GetAxis("Horizontal");
+            float controlThrow = Input.GetAxis("Horizontal");
 
             if (controlThrow > 0)
             {
-                
+
                 Vector2 velocitytest = new Vector2(1f * moveSpeed, myRigidBody.velocity.y);
                 myRigidBody.velocity = velocitytest;
 
                 myAnimator.SetBool("Walking", true);
-                
+
 
             }
             if (controlThrow == 0)
             {
-                
-            myAnimator.SetBool("Walking", false);
-            
-                
+
+                myAnimator.SetBool("Walking", false);
+
+
 
             }
             if (controlThrow < 0)
@@ -173,9 +214,10 @@ public class Player : MonoBehaviour
                 Vector2 velocitytest = new Vector2(-1f * moveSpeed, myRigidBody.velocity.y);
                 myRigidBody.velocity = velocitytest;
                 myAnimator.SetBool("Walking", true);
-                
 
 
+
+            }
         }
             /*if (myCanvas.isActiveAndEnabled)
         {
@@ -190,16 +232,22 @@ public class Player : MonoBehaviour
 
     private void Jump()
     {
+
+        // Can only jump when touching ground
         if (footCollider.IsTouchingLayers(LayerMask.GetMask("Foreground")))
         {
+            
+
             
 
             if (Input.GetButtonDown("Jump"))
             {
                 
+                footCollider.enabled = false;
+                isJumping = true;   
                 Vector2 jumpVelocityToAdd = new Vector2(0f, jumpSpeed);
                 myRigidBody.velocity = jumpVelocityToAdd;
-                myRigidBody.drag = 0f;
+                myRigidBody.drag = 2f;
 
                 
                 audioSource.clip = jumpSFX;
@@ -209,18 +257,27 @@ public class Player : MonoBehaviour
                 myAnimator.SetBool("Walking", false);
                 myAnimator.SetBool("Climbing", false);
                 myAnimator.SetTrigger("Jump");
+
                 
-               
             }
             else
             {
                 myRigidBody.drag = dragAtStart;
+                isJumping = false;
                 
+                footCollider.enabled = true;
+
             }
         }
+        // if not touching ground or ladder i.e jumping then disable drag + disable colliders
         if (!footCollider.IsTouchingLayers(LayerMask.GetMask("Foreground")) && !footCollider.IsTouchingLayers(LayerMask.GetMask("Ladder")))
             {
                 myRigidBody.drag = 0f;
+                
+
+            
+            
+                
             }
     }
         
@@ -361,30 +418,65 @@ public class Player : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
+            
             myAnimator.SetTrigger("Attack");
+            isAttacking = true;
+        }
+        else
+        {
+            isAttacking = false;
         }
     }
 
     // Hit - Lose Health - Pushed back
     private void OnCollisionEnter2D(Collision2D other)
     {
-        
-        if (other.gameObject.tag.Equals("Weapon"))
+
+        if (other.gameObject.tag.Equals("Slime"))
         {
+            knockbackCount = knockbackLength;
+            myAnimator.SetBool("Walking", false);
+        }
+
+        if (other.gameObject.tag.Equals("Slime") && other.transform.position.x > transform.position.x)
+        {
+            int knockback = other.gameObject.GetComponentInParent<SlimeVariant>().knockbackForce;
+            hitFromRight = true;
+
+            Debug.Log("hit");
             int damage = FindObjectOfType<Enemy>().damage;
 
             playerHealth.HealthLoss(damage);
+            Debug.Log(damage);
+            myRigidBody.velocity = new Vector2(-knockback, myRigidBody.velocity.y);
 
-            myRigidBody.velocity = new Vector2(0, 0);
 
-            Vector2 direction = (transform.position - other.transform.position).normalized;
+            //Vector2 direction = (transform.position - collision.transform.position).normalized;
 
-            myRigidBody.AddForce(direction * thrust);
+            //myRigidBody.AddForce(direction * thrust);
 
-            
+
         }
-        
+
+        if (other.gameObject.tag.Equals("Slime") && other.transform.position.x < transform.position.x)
+        {
+
+            int knockback = other.gameObject.GetComponentInParent<SlimeVariant>().knockbackForce;
+            Debug.Log("hit");
+            hitFromLeft = true;
+
+
+            int damage = FindObjectOfType<SlimeVariant>().damage;
+            Debug.Log(damage);
+
+            playerHealth.HealthLoss(damage);
+
+            myRigidBody.velocity = new Vector2(knockback, myRigidBody.velocity.y);
+        }
+
     }
+
+
 
     private void OnCollisionStay2D(Collision2D collision)
     {
@@ -397,6 +489,27 @@ public class Player : MonoBehaviour
                 isClimbing = true;
                 thing.isTrigger = true;
                 exitLadder = false;
+            }
+        } }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        
+    
+        if (collision.gameObject.tag.Equals("Level Exit"))
+        {
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                Debug.Log("Exit please");
+                sceneLoader.LoadNextScene();
+            }
+        }
+        if (collision.gameObject.tag.Equals("Last Level"))
+        {
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                Debug.Log("Last Level");
+                sceneLoader.LoadPreviousScene();
             }
         }
     }
@@ -414,8 +527,11 @@ public class Player : MonoBehaviour
                     exitLadder = false;
                     
                 }
-                
-            
+            if (collision.gameObject.tag.Equals("Weapon"))
+            {
+                myRigidBody.drag = dragAtStart;
+            }
+
         }
        else if (collision.gameObject.tag.Equals("Ladder Exit") && Input.GetKeyDown(KeyCode.Space)) 
             
@@ -445,20 +561,65 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag.Equals("Level Exit"))
+       
+
+        if (collision.gameObject.tag.Equals("Enemy Weapon") && collision.transform.position.x > transform.position.x)
         {
-            Debug.Log("Exit please");
-            sceneLoader.LoadNextScene();
+                int knockback = collision.gameObject.GetComponentInParent<Enemy>().knockbackForce;
+                hitFromRight = true;
+            
+                Debug.Log("hit");
+                int damage = FindObjectOfType<Enemy>().damage;
+
+                playerHealth.HealthLoss(damage);
+
+                myRigidBody.velocity = new Vector2(-knockback, myRigidBody.velocity.y);
+                
+
+                //Vector2 direction = (transform.position - collision.transform.position).normalized;
+
+                //myRigidBody.AddForce(direction * thrust);
+ 
+            
         }
-        if (collision.gameObject.tag.Equals("Last Level"))
+
+        if(collision.gameObject.tag.Equals("Enemy Weapon") && collision.transform.position.x < transform.position.x)
         {
-            Debug.Log("Last Level");
-            sceneLoader.LoadPreviousScene();
-        }
-        
-        
+
+            int knockback = collision.gameObject.GetComponentInParent<Enemy>().knockbackForce;
+            Debug.Log("hit");
+            hitFromLeft = true;
 
 
+            int damage = FindObjectOfType<Enemy>().damage;
+
+            playerHealth.HealthLoss(damage);
+
+            myRigidBody.velocity = new Vector2(knockback, myRigidBody.velocity.y);
+        }
+
+
+
+            if (collision.gameObject.tag.Equals("Arrow") && collision.transform.position.x < transform.position.x)
+        {
+            int damage = FindObjectOfType<SlimeVariant>().damage;
+            playerHealth.HealthLoss(damage);
+            Destroy(collision.gameObject);
+        }
+
+        if (collision.gameObject.tag.Equals("Arrow") && collision.transform.position.x > transform.position.x)
+        {
+            int damage = collision.GetComponent<Arrow>().damage;
+            
+            playerHealth.HealthLoss(damage);
+            Destroy(collision.gameObject);
+        }
+
+       
+        if (collision.gameObject.tag.Equals("Death"))
+        {
+            playerHealth.PlayerDeath();
+        }
 
 
     }
@@ -508,6 +669,11 @@ public class Player : MonoBehaviour
         }
        
         
+    }
+    public void AddItemToInventory(GameObject item)
+    {
+        questItems.Add(item);
+        Debug.Log(questItems[0].name);
     }
 
 }

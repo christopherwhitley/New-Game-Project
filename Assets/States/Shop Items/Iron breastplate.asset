@@ -12,5 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84661cdbd1ca9bf46b4755abaad0f5f1, type: 3}
   m_Name: Iron breastplate
   m_EditorClassIdentifier: 
+  id: 4
+  weaponSprite: {fileID: 0}
+  armourSprite: {fileID: 21300000, guid: 69e4bcfbf6254dbba5f9b3e4516dfb52, type: 3}
   price: 4
+  health: 0
   armour: 2
+  damage: 0

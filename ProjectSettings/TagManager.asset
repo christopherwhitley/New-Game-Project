@@ -13,6 +13,10 @@ TagManager:
   - UI
   - Start
   - Ladder Exit
+  - Enemy Weapon
+  - Spike Trap
+  - Arrow
+  - Death
   layers:
   - Default
   - TransparentFX
@@ -59,14 +63,14 @@ TagManager:
   - name: Ladder
     uniqueID: 3168504359
     locked: 0
+  - name: Enemy
+    uniqueID: 1140683297
+    locked: 0
   - name: Player
     uniqueID: 188637849
     locked: 0
   - name: Villager
     uniqueID: 1462488657
-    locked: 0
-  - name: Enemy
-    uniqueID: 1140683297
     locked: 0
   - name: Bones
     uniqueID: 500302823

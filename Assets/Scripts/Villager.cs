@@ -10,11 +10,13 @@ public class Villager : MonoBehaviour
     [SerializeField] private float moveSpeed = 2f;
 
     public int index;
+    [SerializeField] GameObject questItem;
 
     int currentIndex;
 
     bool isMoving;
     bool isMovingRight;
+    bool isFacingRight;
     bool isPlayerClose = false;
     public static bool isTalking = true;
     Animator myAnimator;
@@ -28,13 +30,21 @@ public class Villager : MonoBehaviour
     State dialogue;
 
     public GameObject npcPlacement;
+    public bool playerHasQuestItem;
+
+    GameObject clone;
+
+    public int conversationCounter;
+    public string QuestName;
+
+    Player player;
 
     // Start is called before the first frame update
     void Start()
     {
         currentIndex = index;
         isMoving = true;
-        
+        isFacingRight = true;
         myAnimator = GetComponentInChildren<Animator>();
 
         dialogueManager = FindObjectOfType<DialogueManager>();
@@ -42,13 +52,9 @@ public class Villager : MonoBehaviour
         isMovingRight = true;
         conversation = GetComponent<DialogueScroll>();
         myRigidbody = GetComponent<Rigidbody2D>();
+        playerHasQuestItem = false;
 
-        if (transform.localPosition.x > waypoints[index].position.x)
-        {
-
-            Debug.Log("Flip");
-        }
-        else return;
+        player = FindObjectOfType<Player>();
 
 
 
@@ -64,6 +70,7 @@ public class Villager : MonoBehaviour
         TriggerConversation();
         SkipDialogue();
         
+       
     }
 
     private void SkipDialogue()
@@ -129,7 +136,7 @@ public class Villager : MonoBehaviour
 
     private void FlipSprite()
     {
-
+        
         transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
 
     }
@@ -138,63 +145,37 @@ public class Villager : MonoBehaviour
 
 
 
-    IEnumerator Wait()
+    public IEnumerator Wait()
     {
 
         yield return new WaitForSeconds(5);
+        
         index = Random.Range(0, waypoints.Length);
 
 
         while (currentIndex == index)
         {
-
+            Debug.Log("random index");
             index = Random.Range(0, waypoints.Length);
 
         }
 
-        if (currentIndex != index && transform.localPosition.x < waypoints[index].position.x && isMovingRight == false)
+        if (currentIndex != index)
         {
 
+            DetermineDirection();
             isMoving = true;
-            isMovingRight = true;
-
-            FlipSprite();
+            
 
 
 
         }
-        else if (currentIndex != index && transform.localPosition.x < waypoints[index].position.x && isMovingRight == true)
-        {
+        
 
-            isMoving = true;
-            isMovingRight = true;
+      
 
-
-
-
-        }
-
-        if (currentIndex != index && transform.localPosition.x > waypoints[index].position.x && isMovingRight == true)
-        {
-
-            isMoving = true;
-            isMovingRight = false;
-
-            FlipSprite();
-
-        }
-
-        if (currentIndex != index && transform.localPosition.x > waypoints[index].position.x && isMovingRight == false)
-        {
-
-            isMoving = true;
-            isMovingRight = false;
-
-
-
-
-
-        }
+        
+       
 
         currentIndex = index;
 
@@ -204,9 +185,13 @@ public class Villager : MonoBehaviour
     {
 
 
-        dialogue = conversation.startingDialogue;
-        /*dialogue = Resources.Load<State>("New State");*/
 
+        if (playerHasQuestItem == true)
+        {
+            dialogue = conversation.questDialogue;
+
+        }
+        else { dialogue = conversation.startingDialogue; }
         conversation.TriggerDialogue(dialogue);
 
 
@@ -221,8 +206,16 @@ public class Villager : MonoBehaviour
             Debug.Log("Start talking " + isPlayerClose);
 
             isTalking = true;
+            StopAllCoroutines();
             Talk();
             InstantiateNPC();
+            myAnimator.SetBool("Walking", false);
+            Animator [] villagerAnimators = FindObjectsOfType<Animator>();
+            foreach(Animator animator in villagerAnimators)
+            {
+                animator.SetBool("Walking", false);
+            }
+            
         }
 
         if (Input.GetMouseButtonDown(1) && myCanvas.activeInHierarchy == true)
@@ -233,10 +226,20 @@ public class Villager : MonoBehaviour
         if (myCanvas.activeInHierarchy == false)
         {
             isTalking = false;
+            StartCoroutine(Wait());
         }
         else
 
             return;
+
+
+        if (conversationCounter < 1)
+        {
+            conversationCounter++;
+            player.quests.Add(QuestName);
+
+        }
+        else conversationCounter++;
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -244,6 +247,33 @@ public class Villager : MonoBehaviour
         if (other.gameObject.tag.Equals("Player"))
         {
             isPlayerClose = true;
+            Player player = other.GetComponent<Player>();
+            if (player.questItems.Contains(questItem)) //if player inventory list has item that matches item on vilager script;
+            {
+                playerHasQuestItem = true;
+                Debug.Log("Player has quest item? " + playerHasQuestItem);
+            }
+            if (questItem == null)
+            {
+                return;
+            }
+            /*if (other.transform.position.x > transform.position.x && isTalking == true)
+            {
+               
+                FlipSprite();
+            }
+            if (other.transform.position.x < transform.position.x && isTalking == true)
+            {
+                
+                FlipSprite();
+            }*/
+
+
+            else 
+            {
+
+                return;
+            }
 
             Debug.Log("Player close");
 
@@ -257,13 +287,13 @@ public class Villager : MonoBehaviour
             isPlayerClose = false;
 
         }
-
+        
 
     }
     public void InstantiateNPC()
     {
        
-        GameObject clone = Instantiate(this.gameObject, npcPlacement.transform.position, Quaternion.identity);
+        clone = Instantiate(this.gameObject, npcPlacement.transform.position, Quaternion.identity);
         
 
 
@@ -289,6 +319,29 @@ public class Villager : MonoBehaviour
             i.sortingLayerName = "Canvas";
 
         }
+    }
+
+    public void DetermineDirection()
+    {
+        Debug.Log("Determine Direction");
+       if (transform.localScale.x > 0 && transform.localPosition.x > waypoints[index].position.x )
+        {
+            
+            FlipSprite();
+            StopAllCoroutines();
+            StartCoroutine(Wait());
+            Debug.Log("Determined direction, flip sprite");
+        }
+
+        if (transform.localScale.x < 0 && transform.localPosition.x < waypoints[index].position.x )
+        {
+           
+            FlipSprite();
+            StopAllCoroutines();
+            StartCoroutine(Wait());
+            Debug.Log("Determined direction, flip sprite");
+        }
+        
     }
 
     

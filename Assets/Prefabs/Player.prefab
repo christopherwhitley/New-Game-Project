@@ -602,14 +602,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 5
   jumpSpeed: 12
-  climbSpeed: 7
+  climbSpeed: 4
   airFriction: 0
   jumpSFX: {fileID: 8300000, guid: 24fdbe336c276a5439d286bdbdf2990d, type: 3}
+  characterScale: {x: 0, y: 0, z: 0}
   damage: 20
   thrust: 500
-  playerPlacement: {fileID: 0}
+  isAttacking: 0
+  isWalking: 0
+  isJumping: 0
+  playerPlacement: {fileID: 1109987028385428}
   armourSprite: {fileID: 212924519056024418}
   weaponSprite: {fileID: 212043285997010526}
+  knockbackCount: 0
+  knockbackLength: 0
+  hitFromLeft: 0
+  hitFromRight: 0
+  playerHit: 0
+  weaponCollider: {fileID: 394427867}
+  questItems: []
 --- !u!114 &5514032806690586309
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -623,6 +634,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerHealth: 100
+  potions: 1
+  potionCountText: {fileID: 0}
+  playerHealthText: {fileID: 0}
+  deathSFX: {fileID: 8300000, guid: de26960872981024d8f6858ab10be5d5, type: 3}
 --- !u!82 &27265236
 AudioSource:
   m_ObjectHideFlags: 0
@@ -3978,7 +3993,7 @@ SortingGroup:
   m_GameObject: {fileID: 1549338164171444}
   m_Enabled: 1
   m_SortingLayerID: 188637849
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 100
 --- !u!1 &1549547319910844
 GameObject:
@@ -6482,7 +6497,7 @@ SortingGroup:
   m_GameObject: {fileID: 1933805290767638}
   m_Enabled: 1
   m_SortingLayerID: 188637849
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 100
 --- !u!1 &1947828315830294
 GameObject:
